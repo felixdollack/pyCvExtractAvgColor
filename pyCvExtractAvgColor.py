@@ -79,11 +79,11 @@ if __name__ == "__main__":
     # construct the argument parser and parse the arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-v", "--video", type=str, required=True,
-                    help="path to input video file")
+                    help="Path to input video file")
     ap.add_argument("-a", "--area", type=str, default="",
-                    help="Area (x1, y1, x2, y2) of the led in the video")
+                    help="Area (x1, y1, x2, y2) of the ROI in the video")
     ap.add_argument("-s", "--speed", type=str, default="1",
-                    help="Video frame manual search speed")
+                    help="Manual video frame search speed")
     args = vars(ap.parse_args())
 
     # initialize the bounding box coordinates
