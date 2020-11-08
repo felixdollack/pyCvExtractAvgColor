@@ -11,14 +11,14 @@ def extract_audio_from(file, out_dir=''):
     If a output path is given, the resulting wav file will be saved there.
     This function will return the filepath of the output file.
     """
-    output_filename = f'{os.path.join(out_dir, file[:-4])}.wav'
+    output_filename = f'{os.path.join(out_dir, os.path.basename(file)[:-4])}.wav'
     os.system(f'ffmpeg -i {file} {output_filename}')
     return output_filename
 
 
-def process_file(input, intermediate_out, final_out):
+def process_file(inpath, input, intermediate_out, final_out):
     print(f'Processing {input}')
-    intermediate_input = extract_audio_from(input, intermediate_out)
+    intermediate_input = extract_audio_from(os.path.join(inpath, input), intermediate_out)
 
     data, fs_audio = sf.read(intermediate_input)  # load trigger file
     if (data.shape[1] > 1):
@@ -65,10 +65,10 @@ if __name__ == "__main__":
 
     if (args['video'].endswith(args['ext'])):
         print('One-shot processing')
-        process_file(args['video'], args['audioout'], args['out'])
+        process_file('', args['video'], args['audioout'], args['out'])
     else:
         print('Batch processing')
         file_list = os.listdir(args['video'])
         files = [x for x in file_list if x.endswith(args['ext'])]
         for file in files:
-            process_file(file, args['audioout'], args['out'])
+            process_file(args['video'], file, args['audioout'], args['out'])
