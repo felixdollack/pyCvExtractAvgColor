@@ -3,3 +3,4 @@ opencv-python
 numpy
 matplotlib
 pandas
+soundfile
