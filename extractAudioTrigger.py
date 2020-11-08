@@ -1,19 +1,8 @@
 import argparse
-import cv2
 import numpy as np
 import os
 import pandas as pd
 import soundfile as sf
-
-
-
-def get_video_fps(file):
-    """Open a video file and return the true sampling frequency.
-    """
-    cap = cv2.VideoCapture(file)
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    cap.release()
-    return fps
 
 
 def extract_audio_from(file, out_dir=''):
