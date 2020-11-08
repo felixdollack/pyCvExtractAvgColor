@@ -9,6 +9,7 @@ import sys
 from threading import Thread
 import time
 import tqdm
+import os
 
 
 class FileVideoStream:
@@ -110,7 +111,7 @@ if __name__ == "__main__":
     fps = int(args.get('speed'))
     filestem = PurePath(args.get('video')).stem
     if (args.get('out')):
-        csv_path = f'{args["out"]}/colors_{filestem}.csv'
+        csv_path = os.path.join(f'{args["out"]}', f'colors_{filestem}.csv')
     else:
         csv_path = f'colors_{filestem}.csv'
 
