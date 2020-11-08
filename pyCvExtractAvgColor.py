@@ -164,17 +164,18 @@ if __name__ == "__main__":
 
     s = time.time()
 
+    T = 1/vfps
     with open(csv_path, "w") as out:
-        out.write('b,g,r\n')
+        out.write('time,b,g,r\n')
 
-        for _ in tqdm.tqdm(range(num_frames)):
+        for k in tqdm.tqdm(range(num_frames)):
             ret, frame = vs.read()
 
             if ret:
                 roi = frame[initBB[1]:(initBB[1]+initBB[3]),
                             initBB[0]:(initBB[0]+initBB[2]), :]
                 avg_color = roi.mean(axis=0).mean(axis=0)
-                out.write(f'{avg_color[0]},{avg_color[1]},{avg_color[2]}\n')
+                out.write(f'{k*T},{avg_color[0]},{avg_color[1]},{avg_color[2]}\n')
 
         e = time.time()
 
