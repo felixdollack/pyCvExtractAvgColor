@@ -1,6 +1,6 @@
 # pyCvExtractAvgColor
 A python script to select a region of interest in a video and
-extract the average color of that region a time series.
+extract the average color of that region as a time series.
 A csv file with columns for (R)ed, (G)reen and (B)lue color values
 as well as a png graphic with the color value over time is saved.
 
