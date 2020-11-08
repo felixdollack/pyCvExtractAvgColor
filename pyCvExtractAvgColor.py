@@ -62,7 +62,7 @@ class FileVideoStream:
         self.stopped = True
 
 
-def plot_result(csv_path, fps, filestem):
+def plot_result(csv_path, fps):
     # save a result plot of the colors
     df = pd.read_csv(csv_path)
     t = np.linspace(0, len(df.r)/fps, len(df.r))
@@ -71,7 +71,7 @@ def plot_result(csv_path, fps, filestem):
     plt.plot(t, df.b, 'b', label='blue')
     plt.xlabel('time [s]')
     plt.legend()
-    plt.savefig(f'colors_plot_{filestem}.png')
+    plt.savefig(f'{csv_path[:-4]}.png')
     plt.close()
 
 
@@ -84,6 +84,8 @@ if __name__ == "__main__":
                     help="Area (x1, y1, x2, y2) of the ROI in the video")
     ap.add_argument("-s", "--speed", type=str, default="1",
                     help="Manual video frame search speed")
+    ap.add_argument("-o", "--out", type=str, required=False,
+                    help="Output path")
     args = vars(ap.parse_args())
 
     # initialize the bounding box coordinates
@@ -107,7 +109,10 @@ if __name__ == "__main__":
 
     fps = int(args.get('speed'))
     filestem = PurePath(args.get('video')).stem
-    csv_path = f'colors_{filestem}.csv'
+    if (args.get('out')):
+        csv_path = f'{args["out"]}/colors_{filestem}.csv'
+    else:
+        csv_path = f'colors_{filestem}.csv'
 
     # if a video path was not supplied, grab the reference to the web cam
     fvs = FileVideoStream(args["video"], fps).start()
@@ -157,6 +162,7 @@ if __name__ == "__main__":
     time.sleep(1.0)
 
     s = time.time()
+
     with open(csv_path, "w") as out:
         out.write('b,g,r\n')
 
@@ -176,5 +182,5 @@ if __name__ == "__main__":
     # stop video read thread
     vs.release()
 
-    plot_result(csv_path, vfps, filestem)
+    plot_result(csv_path, vfps)
     print('Done\n')
