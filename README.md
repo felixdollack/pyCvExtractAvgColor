@@ -4,6 +4,9 @@ extract the average color of that region as a time series.
 A csv file with columns for (R)ed, (G)reen and (B)lue color values
 as well as a png graphic with the color value over time is saved.
 
+There is also a script to call ffmpeg and extract the right audio channel of
+the video in case an acoustic trigger signal was inserted.
+
 ### Installation
 Replace environmentName with anything you like.
 ```
@@ -12,7 +15,7 @@ conda activate environmentName
 pip install -r requirements.txt
 ```
 
-### Usage
+### Usage (video)
 ```
 usage: pyCvExtractAvgColor.py [-h] -v VIDEO [-a AREA] [-s SPEED]
 
@@ -56,4 +59,50 @@ python pyCvExtractAvgColor.py -v input.mp4 -a x1,y1,x2,y2
 or
 ```
 python pyCvExtractAvgColor.py -v input.mp4 -a "x1, y1, x2, y2"
+```
+
+### Usage (audio)
+```
+usage: extractAudioTrigger.py [-h] -v VIDEO [-e EXT] [-ao AUDIOOUT] [-o OUT]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v VIDEO, --video VIDEO
+                        Input video file
+  -e EXT, --ext EXT     Video file extension
+  -ao AUDIOOUT, --audioout AUDIOOUT
+                        Output path for audio file
+  -o OUT, --out OUT     Output path for audio trigger file
+```
+
+---
+__Example:__ This will load the video input.mp4 and call ffmpeg to extract the
+right audio channel. If a path is given instead of a file, all files with the
+file extension specified by ```--ext``` (default: MP4) will be processed.
+The audio channel is saved as wav file in the current working directory or to a
+path that can be specified with ```--audioout```. Next, the audio is loaded and
+peaks due to non-linearities will be extracted. The threshold is hardcoded and
+set to mean+10*std. A csv file with duration of the audio input is saved with
+the trigger state (0 - off, 1 - on) and the time. The output folder can be
+specified with ```--out```.
+
+```
+# batch processing of all files with .MP4 extension
+python pyCvExtractAvgColor.py -v video_folder
+```
+
+```
+# batch processing of all files with the fiven extension
+python pyCvExtractAvgColor.py -v video_folder -e MOV
+```
+
+```
+# Processing of input.mp4. All outputs will be in the current working directory
+python pyCvExtractAvgColor.py -v input.mp4
+```
+
+```
+# Processing of input.mp4. Audio output will be saved to the audio_out folder.
+# Triggers will be saved to the audio_trigger folder.
+python pyCvExtractAvgColor.py -v input.mp4 -ao audio_out -o audio_trigger
 ```
