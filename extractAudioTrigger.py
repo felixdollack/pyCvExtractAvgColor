@@ -16,25 +16,11 @@ def extract_audio_from(file, out_dir=''):
     return output_filename
 
 
-if __name__ == "__main__":
-    """Take a video file as input, extract the audio and save it as wav file.
-    Next, reload the audio data and save a table with trigger data [0~1].
-    If separate output folders for the wav file and the trigger file are
-    provided the respecting files will be saved there.
-    """
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-v", "--video", type=str, required=True,
-                    help="Input video file")
-    ap.add_argument("-ao", "--audioout", type=str, required=False, default='',
-                    help="Output path for audio file")
-    ap.add_argument("-o", "--out", type=str, required=False, default='',
-                    help="Output path for audio trigger file")
-    args = vars(ap.parse_args())
+def process_file(input, intermediate_out, final_out):
+    print(f'Processing {input}')
+    intermediate_input = extract_audio_from(input, intermediate_out)
 
-    video_fps = get_video_fps(args['video'])
-    args["input"] = extract_audio_from(args['video'], args['audioout'])
-
-    data, fs_audio = sf.read(args["input"])  # load trigger file
+    data, fs_audio = sf.read(intermediate_input)  # load trigger file
     if (data.shape[1] > 1):
         # extract trigger on- and offset from signal
         proc = np.abs(np.diff(np.abs(data[:, 1])))
@@ -54,7 +40,35 @@ if __name__ == "__main__":
         df2 = pd.DataFrame(trigger.astype('int'), columns=['trigger'])
         df = df1.join(df2)
         print('Saving...(might take some time)')
-        df.to_csv(os.path.join(args['out'], f'{args['video'][:-4]}.csv'), index=False)
+        df.to_csv(os.path.join(final_out, f'{input[:-4]}.csv'), index=False)
         print('Done.')
     else:
         print('No trigger found in right channel. File is single channel!')
+
+
+if __name__ == "__main__":
+    """Take a video file as input, extract the audio and save it as wav file.
+    Next, reload the audio data and save a table with trigger data [0~1].
+    If separate output folders for the wav file and the trigger file are
+    provided the respecting files will be saved there.
+    """
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-v", "--video", type=str, required=True,
+                    help="Input video file")
+    ap.add_argument("-e", "--ext", type=str, required=False, default='MP4',
+                    help="Video file extension")
+    ap.add_argument("-ao", "--audioout", type=str, required=False, default='',
+                    help="Output path for audio file")
+    ap.add_argument("-o", "--out", type=str, required=False, default='',
+                    help="Output path for audio trigger file")
+    args = vars(ap.parse_args())
+
+    if (args['video'].endswith(args['ext'])):
+        print('One-shot processing')
+        process_file(args['video'], args['audioout'], args['out'])
+    else:
+        print('Batch processing')
+        file_list = os.listdir(args['video'])
+        files = [x for x in file_list if x.endswith(args['ext'])]
+        for file in files:
+            process_file(file, args['audioout'], args['out'])
