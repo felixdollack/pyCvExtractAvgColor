@@ -39,6 +39,10 @@ extract the average color of that area.
 python pyCvExtractAvgColor.py -v input.mp4
 ```
 
+![Example usage of pyCvExtractAvgColor](example.gif)
+(Example video: https://www.youtube.com/watch?v=S_Iww-ZSPLQ)
+
+
 ---
 __Example 2:__ This will load every 30th frame of the video input.mp4 and show them
 frame by frame until you selected a region of interest.
