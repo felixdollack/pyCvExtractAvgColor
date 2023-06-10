@@ -40,6 +40,7 @@ python pyCvExtractAvgColor.py -v input.mp4
 ```
 
 ![Example usage of pyCvExtractAvgColor](example.gif)
+
 (Example video: https://www.youtube.com/watch?v=S_Iww-ZSPLQ)
 
 
