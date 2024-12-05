@@ -87,7 +87,12 @@ if __name__ == "__main__":
                     help="Manual video frame search speed")
     ap.add_argument("-o", "--out", type=str, required=False,
                     help="Output path")
+    ap.add_argument("-tr", "--tracker", type=bool, required=False, default=False
+                    help="Output path")
     args = vars(ap.parse_args())
+
+    if (args.tracker):
+        tracker = cv2.TrackerKCF_create()
 
     # initialize the bounding box coordinates
     if len(args.get('area')) < 7:
@@ -172,8 +177,20 @@ if __name__ == "__main__":
             ret, frame = vs.read()
 
             if ret:
-                roi = frame[initBB[1]:(initBB[1]+initBB[3]),
-                            initBB[0]:(initBB[0]+initBB[2]), :]
+                if (k==0):
+                    if (args.tracker):
+                        tracker.init(frame, initBB)
+                    success = True
+                    box = initBB
+                else:
+                    if (args.tracker):
+                        (success, box) = tracker.update(frame)
+                    else:
+                        success = True
+                        box = initBB
+                if (success):
+                    roi = frame[box[1]:(box[1]+box[3]),
+                                box[0]:(box[0]+box[2]), :]
                 avg_color = roi.mean(axis=0).mean(axis=0)
                 out.write(f'{k*T},{avg_color[0]},{avg_color[1]},{avg_color[2]}\n')
 
